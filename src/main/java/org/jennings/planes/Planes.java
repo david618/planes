@@ -148,11 +148,18 @@ public class Planes {
             //routes.load("routesOneDay100.json");
             //routes.load("routesOneDayUS10.json");
             routes.createRandomRoutes(10, 86400);
+            Planes t = new Planes(routes);
 
-            //Planes t = new Planes(routes);
-            Planes t = new Planes("routes10000_2day.json");
+            
+            //Planes t = new Planes("routes10000_2day.json");
             t.createPlanes();
-            t.getPlanesJSON();
+            long st = System.currentTimeMillis();
+            long ct = st;
+            while (ct < st + 1000*10) {
+                t.getPlanesCSV();
+                ct += 1000;
+            }
+            
 
             //t.save("planes.json");
         } catch (Exception e) {

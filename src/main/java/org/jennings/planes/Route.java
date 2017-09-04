@@ -81,7 +81,8 @@ public class Route {
 
             JSONObject wpt = jsonWpts.getJSONObject(i);
 
-            String name = wpt.getString("name");
+            String origin = wpt.getString("origin");
+            String destination = wpt.getString("destination");
             double lon = wpt.getDouble("lon");
             double lat = wpt.getDouble("lat");
             long st = wpt.getLong("st");
@@ -90,7 +91,7 @@ public class Route {
             double speed = wpt.getDouble("speed");
             long et = wpt.getLong("et");
 
-            Waypoint wp = new Waypoint(st, name, id, lon, lat, distance, bearing, speed, et);
+            Waypoint wp = new Waypoint(st, origin, destination, id, lon, lat, distance, bearing, speed, et);
             wpts.add(wp);
 
             i++;
@@ -173,7 +174,8 @@ public class Route {
 
         for (Waypoint wp : this.wpts) {
             JSONObject wpt = new JSONObject();
-            wpt.put("name", wp.name);
+            wpt.put("origin", wp.origin);
+            wpt.put("destination", wp.destination);
             wpt.put("id", wp.id);
             wpt.put("lon", wp.lon);
             wpt.put("lat", wp.lat);

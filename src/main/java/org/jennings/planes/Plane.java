@@ -242,7 +242,8 @@ public class Plane {
 
                 this.secsToDep = td;
 
-                this.origin = wpt.name;
+                this.origin = wpt.origin;
+                this.destination = wpt.destination;
 
                 i++;
                 if (i == wpts.size()) {
@@ -252,7 +253,6 @@ public class Plane {
                     wpt = wpts.get(i);
                 }
 
-                this.destination = wpt.name;
                 this.dist = wpt.distance;
 
                 break;
@@ -270,7 +270,8 @@ public class Plane {
                 this.speed = wpt.speed;
                 this.bearing = wpt.bearing;
 
-                this.origin = wpt.name;
+                this.origin = wpt.origin;
+                this.destination = wpt.destination;
                 double remainingDist = wpt.distance - dist;
                 if (remainingDist < 0) {
                     remainingDist = 0.0;
@@ -287,7 +288,7 @@ public class Plane {
                     wpt = wpts.get(i);
                 }
 
-                this.destination = wpt.name;
+                
 
                 break;
 
@@ -404,7 +405,7 @@ public class Plane {
 
                 t.setPosition(n + i * 1000);
                 fw.write(t + "\n");
-                System.out.println(t);
+                System.out.println(t.getPlaneJSON());
 
             }
             fw.close();

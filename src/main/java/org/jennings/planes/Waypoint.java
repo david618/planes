@@ -41,7 +41,8 @@ public class Waypoint {
     
     */
     long st; // Time to start based 
-    String name;
+    String origin;
+    String destination;
     int id;
     double lon;
     double lat;
@@ -50,9 +51,15 @@ public class Waypoint {
     double speed;  // constanct speed used when travelling between this point and next    
     long et; // Arrival time at next point  
 
-    public Waypoint(long st, String name, int id, double lon, double lat, double distance, double bearing, double speed, long et) {
-        this.st = st;
-        this.name = name;
+    public Waypoint() {
+        
+    }
+    
+    
+    public Waypoint(long st, String origin, String destination, int id, double lon, double lat, double distance, double bearing, double speed, long et) {
+        this.st = st;       
+        this.origin = origin;
+        this.destination = destination;
         this.id = id;
         this.lon = lon;
         this.lat = lat;
@@ -70,13 +77,22 @@ public class Waypoint {
         this.st = st;
     }
 
-    public String getName() {
-        return name;
+    public String getOrigin() {
+        return origin;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
 
     public int getId() {
         return id;
@@ -136,11 +152,6 @@ public class Waypoint {
 
     @Override
     public String toString() {
-        return "Waypoint{" + "st=" + st + ", name=" + name + ", id=" + id + ", lon=" + lon + ", lat=" + lat + ", distance=" + distance + ", bearing=" + bearing + ", speed=" + speed + ", et=" + et + '}';
+        return "Waypoint{" + "st=" + st + ", origin=" + origin + ", destination=" + destination + ", id=" + id + ", lon=" + lon + ", lat=" + lat + ", distance=" + distance + ", bearing=" + bearing + ", speed=" + speed + ", et=" + et + '}';
     }
-    
-    
-    
-    
-    
 }

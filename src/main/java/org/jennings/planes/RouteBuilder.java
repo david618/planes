@@ -92,7 +92,7 @@ public class RouteBuilder {
 
                 long et = st + Math.round(distB.getDistance() / speed);
 
-                Waypoint wpt = new Waypoint(st, arpt1.getName(), arpt1.getId(), arpt1.getLon(), arpt1.getLat(), distB.getDistance(), distB.getBearing(), speed, et);
+                Waypoint wpt = new Waypoint(st, arpt1.getName(), arpt2.getName(), arpt1.getId(), arpt1.getLon(), arpt1.getLat(), distB.getDistance(), distB.getBearing(), speed, et);
                 wpts.add(wpt);
 
                 arpt1 = arpt2;
@@ -113,7 +113,7 @@ public class RouteBuilder {
                 long et = st + Math.round(distB.getDistance() / speed);
 
                 //System.out.println(st + "," + arpt1.getName() + "," + arpt1.getId() + "," + arpt1.getLon() + "," + arpt1.getLat() + "," + distB.getDistance() + "," + distB.getBearing() + "," + et);
-                Waypoint wpt = new Waypoint(st, arpt1.getName(), arpt1.getId(), arpt1.getLon(), arpt1.getLat(), distB.getDistance(), distB.getBearing(), speed, et);
+                Waypoint wpt = new Waypoint(st, arpt1.getName(), arpt2.getName(), arpt1.getId(), arpt1.getLon(), arpt1.getLat(), distB.getDistance(), distB.getBearing(), speed, et);
                 wpts.add(wpt);
 
             }
@@ -130,9 +130,9 @@ public class RouteBuilder {
     
     public static void main(String args[]) {
         RouteBuilder rb = new RouteBuilder();
-        Route rt = rb.createRoute(36000);
+        Route rt = rb.createRoute(86400*4);
         for (Waypoint wp: rt.wpts) {
-            System.out.println(wp.getName());
+            System.out.println(wp.getOrigin() + " -> " + wp.getDestination());
         }
     }
 
