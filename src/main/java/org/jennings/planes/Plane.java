@@ -216,7 +216,6 @@ public class Plane {
         GreatCircle grc = new GreatCircle();
         ArrayList<Waypoint> wpts = rt.getWpts();
         Waypoint wpt = wpts.get(0);
-        GeographicCoordinate gc = new GeographicCoordinate();
 //        Thing thing = new Thing();
 
         while (i <= wpts.size()) {
@@ -229,9 +228,7 @@ public class Plane {
 
             if (t2 < wpt.st) {
                 // on the ground at this point
-                gc.setLon(wpt.getLon());
-                gc.setLat(wpt.getLat());
-                this.gc = gc;
+                this.gc = new GeographicCoordinate(wpt.getLon(), wpt.getLat());
                 this.speed = 0.0;
                 this.bearing = wpt.bearing;
 
@@ -261,18 +258,27 @@ public class Plane {
                 // in route between this wpt and next
                 GeographicCoordinate pt1 = new GeographicCoordinate(wpt.lon, wpt.lat);
 
-                double dist = wpt.speed * (t2 - wpt.st);
+                double current_dist = wpt.speed * (t2 - wpt.st);
 
-                DistanceBearing distB = new DistanceBearing(dist, wpt.bearing);
-                gc = grc.getNewCoordPair(pt1, distB);
+                DistanceBearing distB = new DistanceBearing(current_dist, wpt.bearing);
+                GeographicCoordinate newGC = grc.getNewCoordPair(pt1, distB);
 
-                this.gc = gc;
+                // Given new coordinates what is the direction bearing to airport
+                if (this.gc != null) {
+                    distB = grc.getDistanceBearing(this.gc.getLon(), this.gc.getLat(),newGC.getLon(), newGC.getLat());
+//                    System.out.println(this.gc);
+//                    System.out.println(newGC);
+//                    System.out.println(distB.getBearing());
+                } 
+                
+                
+                this.gc = newGC;
                 this.speed = wpt.speed;
-                this.bearing = wpt.bearing;
+                this.bearing = distB.getBearing();
 
                 this.origin = wpt.origin;
                 this.destination = wpt.destination;
-                double remainingDist = wpt.distance - dist;
+                double remainingDist = wpt.distance - current_dist;
                 if (remainingDist < 0) {
                     remainingDist = 0.0;
                 }

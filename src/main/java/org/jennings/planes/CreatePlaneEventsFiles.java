@@ -39,7 +39,7 @@ public class CreatePlaneEventsFiles {
     /**
      * 
      */
-    public void createEventsFile(String routeFile, Integer numPlanes, String outputFolder, String prefix, Long startTime, Integer stepSec, Integer durSec, Integer samplesPerFile, Integer format, Double maxAbsLat) {
+    public void createEventsFile(String routeFile, Integer numPlanes, String outputFolder, String prefix, Long startTime, Integer stepSec, Long durSec, Integer samplesPerFile, Integer format, Double maxAbsLat) {
         try {
             
             if (maxAbsLat == null) {
@@ -108,13 +108,13 @@ public class CreatePlaneEventsFiles {
                         case JSON:
                             JSONObject js = new JSONObject();
                             js.put("id", plane.id);
-                            js.put("timestamp", plane.timestamp);
+                            js.put("ts", plane.timestamp);
                             js.put("speed", df.format(plane.speed * 1000.0));
                             js.put("dist", df.format(plane.dist));
                             js.put("bearing", df.format(plane.bearing));
-                            js.put("routeid", plane.rt.id);
-                            js.put("origin", plane.origin);
-                            js.put("destination", plane.destination);
+                            js.put("rtid", plane.rt.id);
+                            js.put("orig", plane.origin);
+                            js.put("dest", plane.destination);
                             js.put("secsToDep", plane.secsToDep);
                             js.put("lon", df5.format(plane.gc.getLon()));
                             js.put("lat", df5.format(plane.gc.getLat()));
@@ -124,6 +124,7 @@ public class CreatePlaneEventsFiles {
                     
                     if (Math.abs(plane.gc.getLat()) > maxAbsLat) {
                         // Skip lats over maxAbsLat 
+                        //System.out.println("skip");
                         
                     } else {
                         // If no file is open open the next file 
@@ -151,16 +152,20 @@ public class CreatePlaneEventsFiles {
             }
 
             try {
+                bw.close();
+                //System.out.println("bw closed");
+            } catch (Exception e) {
+                // ok to ignore
+            }            
+            
+            try {
                 fw.close();
+                //System.out.println("fw closed");
             } catch (Exception e) {
                 // ok to ignore
             }
 
-            try {
-                bw.close();
-            } catch (Exception e) {
-                // ok to ignore
-            }
+
             
 
         } catch (Exception e) {
@@ -207,7 +212,7 @@ public class CreatePlaneEventsFiles {
             }
             
             Integer stepSec = Integer.parseInt(args[5]);
-            Integer durSec = Integer.parseInt(args[6]);
+            Long durSec = Long.parseLong(args[6]);
             Integer samplesPerFile = Integer.parseInt(args[7]);
                                     
             Integer format = t.TXT;

@@ -98,7 +98,7 @@ public class SendEvents {
                         line = t.id + d + t.timestamp + d + t.speed * 1000.0 + d
                                 + t.dist + d + t.bearing + d + t.rt.id + d
                                 + "\"" + t.origin + "\"" + "\"" + t.destination + "\"" + d + t.secsToDep + d
-                                + t.gc.getLon() + d + t.gc.getLat();
+                                + t.getGc().getLon() + d + t.getGc().getLat();
                         break;
                     case JSON:
                         js = new JSONObject();
@@ -111,8 +111,8 @@ public class SendEvents {
                         js.put("origin", t.origin);
                         js.put("destination", t.destination);
                         js.put("secsToDep", t.secsToDep);
-                        js.put("lon", t.gc.getLon());
-                        js.put("lat", t.gc.getLat());
+                        js.put("lon", t.getGc().getLon());
+                        js.put("lat", t.getGc().getLat());
                         line = js.toString();
 
                 }
