@@ -159,8 +159,9 @@ public class Routes {
         Routes t = new Routes();
         
         // Create random route file; 1,000 routes; duration 4 days (86400 seconds/day)
-        t.createRandomRouteFile("routes100_2day.json", 100, 86400*2);
+        //t.createRandomRouteFile("routes100_2day.json", 100, 86400*2);        
         
+        t.createRandomRouteFile("routes1000_2dayUS.json",1000, 86400*4);
         // Load Route File 
         // t.load("routes10000_4day.json");
         
