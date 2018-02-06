@@ -42,8 +42,8 @@ public class Routes {
         rb = new RouteBuilder();
     }
 
-    public Routes(String countryName) {
-        rb = new RouteBuilder(countryName);
+    public Routes(String csvCountryCodes) {
+        rb = new RouteBuilder(csvCountryCodes);
     }
 
     public Routes(double lllon, double lllat, double urlon, double urlat) {
@@ -166,7 +166,7 @@ public class Routes {
         if (numArgs != 3 && numArgs != 4 && numArgs != 7) {
             System.err.println("Usage: Routes routeFilename numRoutes durationSeconds");
             System.err.println("       Routes routeFilename numRoutes durationSeconds lllon lllat urlon urlat");
-            System.err.println("       Routes routeFilename numRoutes durationSeconds CountryName");
+            System.err.println("       Routes routeFilename numRoutes durationSeconds csvCountryCodes");
             System.err.println();
             System.err.println("Example: Routes routes10000_4day.json 1000 345600");
         } else {
@@ -178,8 +178,8 @@ public class Routes {
             
             switch (numArgs) {
                 case 4:
-                    String countryName = args[3];
-                    t = new Routes(countryName);
+                    String csvCountryCodes = args[3];
+                    t = new Routes(csvCountryCodes);
                     break;
                 case 7:
                     Integer lllon = Integer.parseInt(args[3]);

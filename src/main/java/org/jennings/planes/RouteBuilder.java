@@ -44,8 +44,8 @@ public class RouteBuilder {
         arpts = new Airports();
     }
 
-    public RouteBuilder(String countryName) {
-        arpts = new Airports(countryName);
+    public RouteBuilder(String csvCountryCodes) {
+        arpts = new Airports(csvCountryCodes);
     }
 
     

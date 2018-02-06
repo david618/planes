@@ -16,7 +16,6 @@
  * Contributors:
  *     David Jennings
  */
-
 package org.jennings.planes;
 
 import java.io.BufferedReader;
@@ -34,18 +33,17 @@ import org.apache.logging.log4j.Logger;
  * @author david
  */
 public class Airports {
-    
+
     private static Logger log = LogManager.getLogger(Airports.class);
 
     // Group 3 is unquoted String or null, Groupt 2 is Number or null 
     //public static final Pattern COMMADELIMQUOTEDSTRINGS = Pattern.compile("(([^\"][^,]*)|\"([^\"]*)\"),?");
-    
     // Group 2 is number or null; Group 1 is String without quotes; Group 0 is the Quoted String
-    public static final Pattern COMMADELIMQUOTEDSTRINGS = Pattern.compile("\"([^\"]+?)\",?|([^,]+),?|,"); 
-    
+    public static final Pattern COMMADELIMQUOTEDSTRINGS = Pattern.compile("\"([^\"]+?)\",?|([^,]+),?|,");
+
     // Group 2 is number or null; Group 1 is String without quotes; Group 0 is the Quoted String
-    public static final Pattern PIPEDELIMQUOTEDSTRINGS = Pattern.compile("\"([^\"]+?)\"\\|?|([^\\|]+)\\|?\\|");       
-    
+    public static final Pattern PIPEDELIMQUOTEDSTRINGS = Pattern.compile("\"([^\"]+?)\"\\|?|([^\\|]+)\\|?\\|");
+
     ArrayList<Airport> airports;
     int numAirports;
 
@@ -53,45 +51,63 @@ public class Airports {
      * Load Airports from all over the world
      */
     public Airports() {
-        this(-180,-90,180,90,null);
+        this(-180, -90, 180, 90, null);
     }
-    
+
     /**
      * Load Airports Matching a Country Name
+     *
      * @param countryName
      */
     public Airports(String countryName) {
-        this(-180,-90,180,90,countryName);
+        this(-180, -90, 180, 90, countryName);
     }
-    
+
+    public Airports(double lllon, double lllat, double urlon, double urlat) {
+        this(lllon, lllat, urlon, urlat, null);
+    }
+
     /**
      * Loads airports from a file
-     * 
-     * The airport.dat file was downloaded from https://openflights.org/data.html
-     * 
+     *
+     * The airport.dat file was downloaded from
+     * https://openflights.org/data.html
+     *
      * @param lllon Lower Left Longitude
      * @param lllat Lower Right Longitude
      * @param urlon Upper Right Longitude
      * @param urlat Upper Right Latitude
+     * @param cntryName
      */
-    public Airports(double lllon, double lllat, double urlon, double urlat, String cntryName) {
+    public Airports(double lllon, double lllat, double urlon, double urlat, String ccs) {
 
         // Load Airports
         FileReader fr;
         BufferedReader br;
-        
+
         try {
             // Load in Aiports; Assumes file is located in Project Root
-            fr = new FileReader("airports.dat"); 
+            fr = new FileReader("airports_countries.dat");
             br = new BufferedReader(fr);
 
             airports = new ArrayList<>();
+
+            ArrayList<String> ccsList = new ArrayList<>();
+
+            if (ccs != null) {
+                ccsList = new ArrayList<>();
+                String ccsArray[] = ccs.split(",");
+                for (String cc : ccsArray) {
+                    ccsList.add(cc);
+                }
+            }
 
             String line;
             while ((line = br.readLine()) != null) {
 
                 line = line.replace("\\\"", "'");  // Replace \" with single quote
                 Matcher matcher = COMMADELIMQUOTEDSTRINGS.matcher(line);
+                //System.out.println(line);
 
                 ArrayList<String> vals = new ArrayList<>();
 
@@ -99,34 +115,38 @@ public class Airports {
                 while (matcher.find()) {
                     if (matcher.group(2) != null) {
                         String val = matcher.group(2);
+                        //System.out.println(val);
                         if (val.equalsIgnoreCase("\\N")) {
                             vals.add(i, null);
+                            i += 1;
                         } else {
                             // This is a number
                             vals.add(i, matcher.group(2));
+                            i += 1;
                         }
                     } else if (matcher.group(1) != null) {
                         // This is a String
                         vals.add(i, matcher.group(1));
+                        i += 1;
                     }
-                    i += 1;
 
                 }
 
                 int id = Integer.parseInt(vals.get(0));
                 String name = vals.get(1);
                 String cntry = vals.get(3);
+                String cc = vals.get(14);
                 String lat = vals.get(6);
                 String lon = vals.get(7);
 
                 double dlon = Double.parseDouble(lon);
-                double dlat = Double.parseDouble(lat);                
-                
-                Airport arpt = new Airport(id, name, cntry, dlat, dlon);
+                double dlat = Double.parseDouble(lat);
 
-                if (cntryName != null) {
+                Airport arpt = new Airport(id, name, cntry, cc, dlat, dlon);
+
+                if (ccs != null) {
                     // If name is not null match name (ignore any coordinate entries provided)
-                    if (cntry.equalsIgnoreCase(cntryName)) {
+                    if (ccsList.contains(cc)) {
                         airports.add(arpt);
                     }
                 } else if (dlon > lllon && dlon < urlon) {
@@ -172,23 +192,52 @@ public class Airports {
 
         return arpt;
     }
-    
-    
+
     public void printAll() {
         airports.forEach((arpt) -> {
             System.out.println(arpt.getName());
         });
-        
+
     }
-    
 
     public static void main(String[] args) {
 
-        Airports t = new Airports();
+//        Airports t = new Airports("DE,US");
+//
+//        t.printAll();
+//        System.out.println(t.airports.size());
+        int numArgs = args.length;
 
-        t.printAll();
-        System.out.println(t.airports.size());
-        
+        if (numArgs != 0 && numArgs != 1 && numArgs != 4) {
+            System.err.println("Usage: Airports ");
+            System.err.println("       Airports lllon lllat urlon urlat");
+            System.err.println("       Airports csvCountryCodes");
+            System.err.println();
+            System.err.println("Example: Airports DE,US");
+        } else {
+            Airports t = new Airports();
+
+            switch (numArgs) {
+                case 1:
+                    String csvCountryCodes = args[0];
+                    t = new Airports(csvCountryCodes);
+                    break;
+                case 4:
+                    Integer lllon = Integer.parseInt(args[0]);
+                    Integer lllat = Integer.parseInt(args[1]);
+                    Integer urlon = Integer.parseInt(args[2]);
+                    Integer urlat = Integer.parseInt(args[3]);
+                    t = new Airports(lllon, lllat, urlon, urlat, null);
+                    break;
+                default:
+                    break;
+            }
+
+            t.printAll();
+            System.out.println(t.airports.size());
+
+        }
+
     }
 
 }
