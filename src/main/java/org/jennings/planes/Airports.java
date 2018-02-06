@@ -53,7 +53,15 @@ public class Airports {
      * Load Airports from all over the world
      */
     public Airports() {
-        this(-180,-90,180,90);
+        this(-180,-90,180,90,null);
+    }
+    
+    /**
+     * Load Airports Matching a Country Name
+     * @param countryName
+     */
+    public Airports(String countryName) {
+        this(-180,-90,180,90,countryName);
     }
     
     /**
@@ -66,7 +74,7 @@ public class Airports {
      * @param urlon Upper Right Longitude
      * @param urlat Upper Right Latitude
      */
-    public Airports(double lllon, double lllat, double urlon, double urlat) {
+    public Airports(double lllon, double lllat, double urlon, double urlat, String cntryName) {
 
         // Load Airports
         FileReader fr;
@@ -116,7 +124,12 @@ public class Airports {
                 
                 Airport arpt = new Airport(id, name, cntry, dlat, dlon);
 
-                if (dlon > lllon && dlon < urlon) {
+                if (cntryName != null) {
+                    // If name is not null match name (ignore any coordinate entries provided)
+                    if (cntry.equalsIgnoreCase(cntryName)) {
+                        airports.add(arpt);
+                    }
+                } else if (dlon > lllon && dlon < urlon) {
                     if (dlat > lllat && dlat < urlat) {
                         airports.add(arpt);
                     }
@@ -153,7 +166,7 @@ public class Airports {
             i = rnd.nextInt(numAirports);
             arpt = airports.get(i);
             if (numTries > 10) {
-                throw new Exception("Having trouble finding a Random that doesn't match the value requested");
+                throw new Exception("Having trouble finding a Random that doesn't match the name provided");
             }
         }
 
@@ -174,6 +187,7 @@ public class Airports {
         Airports t = new Airports();
 
         t.printAll();
+        System.out.println(t.airports.size());
         
     }
 

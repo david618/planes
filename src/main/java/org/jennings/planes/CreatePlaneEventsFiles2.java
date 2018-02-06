@@ -20,32 +20,49 @@ package org.jennings.planes;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
+ * This version of CreatePlanesEventsFiles adds additional 140 random string fields.
+ * 
  * @author david
  */
 public class CreatePlaneEventsFiles2 {
-    
+
+    private static final Logger log = LogManager.getLogger(CreatePlaneEventsFiles2.class);
+
     final private int TXT = 0;
     final private int JSON = 1;
 
-    ArrayList<Plane> planes = new ArrayList<>();    
-    
+    ArrayList<Plane> planes = new ArrayList<>();
+
     /**
-     * 
+     *
+     * @param routeFile
+     * @param numPlanes
+     * @param outputFolder
+     * @param prefix
+     * @param startTime
+     * @param stepSec
+     * @param durSec
+     * @param samplesPerFile
+     * @param format
+     * @param maxAbsLat
      */
     public void createEventsFile(String routeFile, Integer numPlanes, String outputFolder, String prefix, Long startTime, Integer stepSec, Integer durSec, Integer samplesPerFile, Integer format, Double maxAbsLat) {
         try {
-            
+
             if (maxAbsLat == null) {
                 maxAbsLat = 90.0;
             }
-            
+
             // Create the Routes
             Routes rts;
             rts = new Routes();
@@ -73,18 +90,17 @@ public class CreatePlaneEventsFiles2 {
             Long t = startTime;  // millisecons from epoch
 
             Long numWritten = 0L;
-            
-            
+
             DecimalFormat df = new DecimalFormat();
             df.setMaximumFractionDigits(2);
             df.setGroupingUsed(false);
-            
+
             DecimalFormat df5 = new DecimalFormat();
             df5.setMaximumFractionDigits(5);
             df5.setGroupingUsed(false);
-            
+
             GenerateRandomData genRndData = new GenerateRandomData();
-            
+
             while (t < startTime + durSec * 1000) {
 
                 for (Plane plane : planes) {
@@ -94,17 +110,17 @@ public class CreatePlaneEventsFiles2 {
 
                     switch (format) {
                         case TXT:
-                            line = plane.id + d 
-                                    + plane.timestamp + d 
+                            line = plane.id + d
+                                    + plane.timestamp + d
                                     + df.format(plane.speed * 1000.0) + d
-                                    + df.format(plane.dist) + d 
+                                    + df.format(plane.dist) + d
                                     + df.format(plane.bearing) + d
                                     + plane.rt.id + d
                                     + "\"" + plane.origin + "\"" + d
                                     + "\"" + plane.destination + "\"" + d
                                     + plane.secsToDep + d
-                                    + df5.format(plane.gc.getLon()) + d 
-                                    + df5.format(plane.gc.getLat());                                    
+                                    + df5.format(plane.gc.getLon()) + d
+                                    + df5.format(plane.gc.getLat());
                             // Add loop to append 140 additional fields 
                             int cnt = 0;
                             while (cnt < 140) {
@@ -128,10 +144,10 @@ public class CreatePlaneEventsFiles2 {
                             line = js.toString();
 
                     }
-                    
+
                     if (Math.abs(plane.gc.getLat()) > maxAbsLat) {
                         // Skip lats over maxAbsLat 
-                        
+
                     } else {
                         // If no file is open open the next file 
                         if (bw == null) {
@@ -139,43 +155,50 @@ public class CreatePlaneEventsFiles2 {
                             fw = new FileWriter(outputFolder + fs + prefix + String.format("%05d", fileNum));
                             bw = new BufferedWriter(fw);
                         }
-                        
+
                         numWritten += 1;
                         bw.write(line);
                         bw.newLine();
                     }
-                                                                                
+
                     if (numWritten % samplesPerFile == 0) {
-                        bw.close();
-                        fw.close();
+                        if (bw != null) {
+                            bw.close();
+                        }
+                        if (fw != null) {
+                            fw.close();
+                        }
                         bw = null;
                         fw = null;
-                        
-                    }                                        
+
+                    }
                 }
 
                 t += stepSec * 1000;
             }
 
             try {
-                fw.close();
-            } catch (Exception e) {
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (IOException e) {
                 // ok to ignore
             }
 
             try {
-                bw.close();
-            } catch (Exception e) {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException e) {
                 // ok to ignore
             }
-            
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | JSONException e) {
+            log.error(e);
         }
 
     }
-    
+
     public static void main(String[] args) {
 
 //        String routeFile = "routes10000_4day.json";
@@ -189,55 +212,50 @@ public class CreatePlaneEventsFiles2 {
 //        Integer format = t.TXT;
 //
 //        t.run(routeFile, numThg, outputFolder, prefix, startTime, stepSec, durSec, samplesPerFile, format, null);
-        
-        
         int numArgs = args.length;
         CreatePlaneEventsFiles2 t = new CreatePlaneEventsFiles2();
-        
+
         if (numArgs < 9 || numArgs > 10) {
             System.err.println("Usage: CreatePlaneEventsFiles2 routeFile numThings outputFolder prefix startTime step durationSec samplesPerFile format <latLimit>");
             System.err.println();
-            System.err.println("Example: CreatePlaneEventsFiles2 routes10000_4day.json 100000 /home/david/testfolder data now 60 3600 1000000 txt");            
+            System.err.println("Example: CreatePlaneEventsFiles2 routes10000_4day.json 100000 /home/david/testfolder data now 60 3600 1000000 txt");
         } else {
-            
+
             String routeFile = args[0];
             Integer numThg = Integer.parseInt(args[1]);
             String outputFolder = args[2];
             String prefix = args[3];
             String startTimeStr = args[4];
-            
+
             Long startTime = System.currentTimeMillis();
             if (startTimeStr.equalsIgnoreCase("now")) {
                 // ok
             } else {
                 startTime = Long.parseLong(startTimeStr);
             }
-            
+
             Integer stepSec = Integer.parseInt(args[5]);
             Integer durSec = Integer.parseInt(args[6]);
             Integer samplesPerFile = Integer.parseInt(args[7]);
-                                    
+
             Integer format = t.TXT;
             if (args[8].equalsIgnoreCase("json")) {
                 format = t.JSON;
             } else if (args[8].equalsIgnoreCase("txt")) {
                 format = t.TXT;
             } else {
-                System.out.println("Unrecognized Format. Defaulting to txt");
+                System.out.println("Unrecognized Format. Using txt");
             }
-            
+
             Double absMaxLat = null;
             if (numArgs == 10) {
                 absMaxLat = Double.parseDouble(args[9]);
             }
 
             t.createEventsFile(routeFile, numThg, outputFolder, prefix, startTime, stepSec, durSec, samplesPerFile, format, absMaxLat);
-            
-            
-        }
-        
-        
 
-    }    
-    
+        }
+
+    }
+
 }

@@ -34,7 +34,7 @@ import java.util.HashMap;
  */
 public class WaypointsOF {
 
-    public HashMap<String, ArrayList<Waypoint>> waypoints = new HashMap<String, ArrayList<Waypoint>>();
+    public HashMap<String, ArrayList<Waypoint>> waypoints = new HashMap<>();
 
     public WaypointsOF() {
 

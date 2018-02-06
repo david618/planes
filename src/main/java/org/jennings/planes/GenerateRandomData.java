@@ -134,7 +134,7 @@ public class GenerateRandomData {
     /**
      * Return formated date string given a startDate and number of seconds 
      * @param startDate
-     * @param seconds
+     * @param ms
      * @param format
      * @return 
      */
@@ -169,6 +169,7 @@ public class GenerateRandomData {
     /**
      * Tries to make something that is somewhat readable.
      * @param numchars
+     * @param addNumsSpecial
      * @return 
      */
     public String generateWord2(int numchars, boolean addNumsSpecial) {

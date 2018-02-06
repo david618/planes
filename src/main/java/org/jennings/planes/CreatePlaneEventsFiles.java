@@ -20,9 +20,13 @@ package org.jennings.planes;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -31,6 +35,8 @@ import org.json.JSONObject;
  */
 public class CreatePlaneEventsFiles {
     
+    private static final Logger log = LogManager.getLogger(CreatePlaneEventsFiles.class);
+    
     final private int TXT = 0;
     final private int JSON = 1;
 
@@ -38,6 +44,16 @@ public class CreatePlaneEventsFiles {
     
     /**
      * 
+     * @param routeFile
+     * @param numPlanes
+     * @param outputFolder
+     * @param prefix
+     * @param startTime
+     * @param stepSec
+     * @param durSec
+     * @param samplesPerFile
+     * @param format
+     * @param maxAbsLat
      */
     public void createEventsFile(String routeFile, Integer numPlanes, String outputFolder, String prefix, Long startTime, Integer stepSec, Long durSec, Integer samplesPerFile, Integer format, Double maxAbsLat) {
         try {
@@ -140,8 +156,8 @@ public class CreatePlaneEventsFiles {
                     }
                                                                                 
                     if (numWritten % samplesPerFile == 0) {
-                        bw.close();
-                        fw.close();
+                        if (bw != null) bw.close();
+                        if (fw != null) fw.close();
                         bw = null;
                         fw = null;
                         
@@ -152,24 +168,24 @@ public class CreatePlaneEventsFiles {
             }
 
             try {
-                bw.close();
+                if (bw != null) bw.close();
                 //System.out.println("bw closed");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 // ok to ignore
             }            
             
             try {
-                fw.close();
+                if (fw != null) fw.close();
                 //System.out.println("fw closed");
-            } catch (Exception e) {
+            } catch (IOException e) {
                 // ok to ignore
             }
 
 
             
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | JSONException e) {
+            log.error(e);
         }
 
     }
@@ -221,7 +237,7 @@ public class CreatePlaneEventsFiles {
             } else if (args[8].equalsIgnoreCase("txt")) {
                 format = t.TXT;
             } else {
-                System.out.println("Unrecognized Format. Defaulting to txt");
+                System.out.println("Unrecognized Format. Using txt");
             }
             
             Double absMaxLat = null;

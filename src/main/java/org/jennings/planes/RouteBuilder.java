@@ -44,8 +44,13 @@ public class RouteBuilder {
         arpts = new Airports();
     }
 
+    public RouteBuilder(String countryName) {
+        arpts = new Airports(countryName);
+    }
+
+    
     public RouteBuilder(double lllon, double lllat, double urlon, double urlat) {
-        arpts = new Airports(lllon, lllat, urlon, urlat);
+        arpts = new Airports(lllon, lllat, urlon, urlat, null);
     }
 
     /**

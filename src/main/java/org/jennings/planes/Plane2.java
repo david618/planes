@@ -18,7 +18,6 @@
  */
 package org.jennings.planes;
 
-import org.jennings.geotools.DistanceBearing;
 import org.jennings.geotools.GeographicCoordinate;
 import org.jennings.geotools.GreatCircle;
 
