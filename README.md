@@ -3,12 +3,25 @@ Planes Simulator
 
 ## Compile
 
-- Clone the repo
-- Compile `mvn install`
+The planes project uses a Great Circle calculation provide by my [geotools](https://github.com/david618/geotools) project.
 
-## Airports
+### Clone and build geotools
+```
+git clone https://github.com/david618/geotools
+cd geotools
+mvn install
+```
 
-This class loads the airport data from [openflights.org](https://openflights.org/data.html).
+### Clone and build planes
+```
+git clone https://github.com/david618/planes
+cd planes
+mvn install
+```
+
+## Airports Class
+
+Loads the airport data from [openflights.org](https://openflights.org/data.html).
 
 The data was enhanced by doing a spatial join with [TM World Borders](http://thematicmapping.org/downloads/world_borders.php) using QGIS.  The Nearest Neighbor Join ([NNJoin](https://plugins.qgis.org/plugins/NNJoin/)) plugin was used to match each airport to the nearest country and join the ISO 2 character code and country name with the airports data.  **Note:** The airports dat has a Country field; however, some of the names identified were not the country the Airport was in.
 
@@ -17,9 +30,9 @@ You can get a list of Airports from command line.  For example to get a list of 
 The last line of the output is the number of airports found. 
 
 
-## Routes 
+## Routes Class
 
-This Class can be used to create a random routes file. The Routes file (json) contains an array of Route. Each Route is defined by a array of waypoints.  
+Can be used to create a random routes file. The Routes file (json) contains an array of Route. Each Route is defined by a array of waypoints.  
 
 <pre>
  * 816,Alice Springs Airport,3319,133.90199279785156,-23.806699752807617,13361.853782406464,168.8274126698336,61068
@@ -49,9 +62,9 @@ java -cp target/planes.jar org.jennings.planes.Routes GermanyRoutes_2days.json 1
 - Minimum duration of a route will be 172,800 seconds (2 days)
 - The routes will only contain airports in DE (Germany)
 
-## CreatePlaneEventsFiles
+## CreatePlaneEventsFiles Class
 
-This class creates events give a routes file.
+Creates events give a routes file.
 
 The command line takes several parameters
 <pre>
@@ -91,7 +104,7 @@ Fields
 - lon : Current WGS84 longitude of plane
 - lat : Current WGS84 latitude of plane
 
-Sample Events 
+Sample CSV Output 
 <pre>
 0,1506955709148,186.53,4152.59,73.47,1,"Lavrentiya Airport","Wright-Patterson Air Force Base",-1,-132.46616,65.2584
 1,1506955709148,199.14,3342.2,69.42,2,"Cascavel Airport","N'Djamena International Airport",-1,-10.78228,-3.51841
