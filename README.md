@@ -23,7 +23,7 @@ mvn install
 
 Loads the airport data from [openflights.org](https://openflights.org/data.html).
 
-The data was enhanced by doing a spatial join with [TM World Borders](http://thematicmapping.org/downloads/world_borders.php) using QGIS.  The Nearest Neighbor Join ([NNJoin](https://plugins.qgis.org/plugins/NNJoin/)) plugin was used to match each airport to the nearest country and join the ISO 2 character code and country name with the airports data.   The resulting file [airports_counties.dat](./airports_counties.dat)
+The data was enhanced by doing a spatial join with [TM World Borders](http://thematicmapping.org/downloads/world_borders.php) using QGIS.  The Nearest Neighbor Join ([NNJoin](https://plugins.qgis.org/plugins/NNJoin/)) plugin was used to match each airport to the nearest country and join the ISO 2 character code and country name with the airports data.   The resulting file [airports_countries.dat](./airports_countries.dat)
 
 **Note:** The Open Flights `airports.dat` has a country field; however, some of the names identified were not the country the Airport was in.
 
