@@ -23,8 +23,9 @@ package org.jennings.planes;
  * Java Bean
  *     Example: 
  *   st: 321 (Seconds)
- *   name: Lambert International Airport (String)
- *   id: 123 (Unique id for this waypoint)
+ *   origin: Allice Springs Airport (String)
+ *   dest: La Plata Airport (String)
+ *   id: 123 (waypoint id)
  *   lon: 33.4  (wgs84)
  *   lat: 22.8  (wgs84) 
  *   dist: 327 (km)

@@ -209,7 +209,7 @@ public class CreatePlaneEventsFiles {
         CreatePlaneEventsFiles t = new CreatePlaneEventsFiles();
         
         if (numArgs < 9 || numArgs > 10) {
-            System.err.println("Usage: CreatePlaneEventsFiles routeFile numThings outputFolder prefix startTime step durationSec samplesPerFile format <latLimit>");
+            System.err.println("Usage: CreatePlaneEventsFiles routeFile numPlanes outputFolder prefix startTime step durationSec samplesPerFile format <latLimit>");
             System.err.println();
             System.err.println("Example: CreatePlaneEventsFiles routes10000_4day.json 100000 /home/david/testfolder data now 60 3600 1000000 txt");            
         } else {
