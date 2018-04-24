@@ -27,7 +27,7 @@ The data was enhanced by doing a spatial join with [TM World Borders](http://the
 
 **Note:** The Open Flights `airports.dat` has a country field; however, some of the names identified were not the country the Airport was in.
 
-### List all Airport
+### List all Airports
 
 `java -cp target/planes.jar org.jennings.planes.Airports`
 
@@ -61,6 +61,69 @@ Parameters
 - Desired Route File Name
 - Number of Routes
 - Duration in Seconds
+
+### Algotihm Overview
+
+The following Algorithm results in a deterministic position for simulated planes on routes given a time.
+
+Each Route consists of a set of Waypoints. The set of Wayoints provide a predicatable time series that can be used to provide a predicatable position on the route.  For example; given these waypoints.
+
+```
+    "wpts": [
+      {
+        "st": 394,
+        "distance": 958.1792577481264,
+        "bearing": -82.84259622084379,
+        "origin": "Page Municipal Airport",
+        "destination": "San Carlos Airport",
+        "lon": -111.447998,
+        "id": 4124,
+        "lat": 36.92610168,
+        "speed": 0.22956721907413002,
+        "et": 4568
+      },
+      {
+        "st": 5256,
+        "distance": 4089.5575505642364,
+        "bearing": 69.58146536033003,
+        "origin": "San Carlos Airport",
+        "destination": "Morristown Municipal Airport",
+        "lon": -122.25,
+        "id": 7683,
+        "lat": 37.511901855469,
+        "speed": 0.19272472916988517,
+        "et": 26476
+      },
+      {
+        "st": 26876,
+        "distance": 3211.106595432875,
+        "bearing": -85.50935562258216,
+        "origin": "Morristown Municipal Airport",
+        "destination": "Page Municipal Airport",
+        "lon": -74.4149017333984,
+        "id": 7657,
+        "lat": 40.7994003295898,
+        "speed": 0.2692611203446172,
+        "et": 38802
+      }
+```
+
+The position is found for an Aircraft by taking the current Epoch time and doing a Modulo on et of last waypoint (38,802) resulting in a Time in Route (t) from 0 to 38,801.  
+
+```
+0     <= t < 394   : On Ground at Page Municipal Airport
+394   <= t < 4568  : Enroute from Page Municipal Airport to  San Carlos Airport
+4568  <= t < 5256  : On Ground at San Carlos Airport
+5256  <= t < 26476 : Enroute from San Carlos Airport to Morristown Municipal Airport
+26476 <= t < 26876 : On Ground at Morristown Municipal Airport
+26876 <= t < 38802 : Enroute from Morristown Municipal Airport to Page Municipal Airport
+```
+
+Each plane is randomly assigned an offset into the route so mulitple planes can be on the same route. 
+
+The Enroute positions are calculated using Great Circle path between origin and destination assuming a fixed speed.  
+
+
 
 ### Create 10,000 Random Routes 
 
