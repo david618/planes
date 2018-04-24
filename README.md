@@ -27,39 +27,73 @@ The data was enhanced by doing a spatial join with [TM World Borders](http://the
 
 **Note:** The Open Flights `airports.dat` has a country field; however, some of the names identified were not the country the Airport was in.
 
+### List all Airport
+
+`java -cp target/planes.jar org.jennings.planes.Airports`
+
+The dataset contains just over 7,000 airports.
+
 ### Get List of Aiports by Country Code
 You can get a list of Airports from command line.  For example to get a list of Aiports for United State, Canada, and Mexico. `java -cp target/planes.jar org.jennings.planes.Airports US,CA,MX`  The last line of the output is the number of airports found. 
 
+### Get List of Airports by Bounding Box
 
+```
+java -cp target/planes.jar org.jennings.planes.Airports 0 0 10 10
 
+Cadjehoun Airport
+Nnamdi Azikiwe International Airport
+Akure Airport
+Benin Airport
+...
+São Tomé International Airport
+Sam Mbakwe International Airport
+Asaba International Airport
+Akwa Ibom International Airport
+25
+```
 
 ## Routes Class
 
-Creates a random Routes File. The Routes File (json) contains an array of Route Objects. Each Route contains an array of Waypoint Objects.  
+Creates a random Routes File. Provides a quick way to create a set of random routes.
 
-### Example (Create Random Routes)
+Parameters
+- Desired Route File Name
+- Number of Routes
+- Duration in Seconds
+
+### Create 10,000 Random Routes 
+
+`java -cp target/planes.jar org.jennings.planes.Routes routes10000_2day.json 10000 172800`
 
 
-### Example (Create Random Routes File in Germany)
-<pre>
+### Create Random Routes File in Germany
+```
 java -cp target/planes.jar org.jennings.planes.Routes GermanyRoutes_2days.json 100 172800 DE
-</pre>
-
+```
 - Creates a Route File named: GermanyRoutes_2days.json
 - The file will have 100 routes 
 - Minimum duration of a route will be 172,800 seconds (2 days)
 - The routes will only contain airports in DE (Germany)
 
 
-
 ## CreatePlaneEventsFiles Class
 
-Creates events give a routes file.
+Creates events give a Routes File.
 
 The command line takes several parameters
-<pre>
-Usage: CreatePlaneEventsFiles routeFile numThings outputFolder prefix startTime step durationSec samplesPerFile format <latLimit>
-</pre>
+```
+Usage: CreatePlaneEventsFiles routeFile numPlanes outputFolder prefix startTime step durationSec samplesPerFile format (latLimit)
+```
+- routeFile: Name of the route file to use
+- numPlanes: Number of planes to assign to the routes. If more planes than routes then routes will be used more than once.
+- outputFolder: Where the Events Files will be created
+- prefix: Output files are number from 1 to 99999 and zero padded (e.g. with prefix `planes` the first file is planes00001)
+- step: Number of seconds between samples
+- durationSec: Number of seconds to run simulation for
+- samplesPerFile: Limit the number of samples in a file to this number 
+- format: txt or json 
+- (latlimit): If specified any events with a latitude magnitude greater than latlimit will not be created. You can use this to prevent creating latitude's that are out of range for a specific SRID (e.g. SRID 102100 cannot support latitudes outside range -89 to 89.
 
 For example:
 
@@ -70,12 +104,19 @@ java -cp target/planes.jar org.jennings.planes.CreatePlaneEventsFiles GermanyRou
 - Creates 200 planes on the routes defined in GermanyRoutes_2days.json
 - Output files are sent to /home/david/testfolder
 - Output files are prefixed with "DEplanes" and contain at most 1,000,000 events
-- The startTime "now" uses the current system time as startTime.  Samples created every 60 seconds for 36,000,000 
+- The startTime "now" uses the current system time as startTime.  Samples created every 60 seconds for 3,600,000 
 - The output format will be txt (comma separated values)
 
 This created 12 files DEplanes00001 to DEplanes00012. Each with 1,000,000 events.
 
-The files contain UTF-8 characters.  
+Number of Events = durationSec / step * numPlanes
+
+
+
+
+## Converting To ASCII
+
+The names in the Data contain UTF-8 Characters.  
 
 You can convert to ASCII using a Linux command `iconv -f UTF8 -t ASCII//TRANSLIT DEplanes00006 -o DEplanes00006.ascii.csv`
 
