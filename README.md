@@ -158,7 +158,7 @@ Usage: CreatePlaneEventsFiles routeFile numPlanes outputFolder prefix startTime 
 - format: txt or json 
 - (latlimit): If specified any events with a latitude magnitude greater than latlimit will not be created. You can use this to prevent creating latitude's that are out of range for a specific SRID (e.g. SRID 102100 cannot support latitudes outside range -89 to 89.
 
-For example:
+### Create Events Routes Germany
 
 <pre>
 java -cp target/planes.jar org.jennings.planes.CreatePlaneEventsFiles GermanyRoutes_2days.json 200 /home/david/testfolder DEplanes now 60 3600000 1000000 txt
@@ -174,8 +174,17 @@ This created 12 files DEplanes00001 to DEplanes00012. Each with 1,000,000 events
 
 Number of Events = durationSec / step * numPlanes
 
+### Create Events Limit latitude -88 to 88
 
+Created near
 
+```
+java -cp target/planes.jar org.jennings.planes.CreatePlaneEventsFiles routes10000_2day.json 10000 /mnt/resource/s3/esriplanes/lat88 planes now 60 1800000 5000000 txt 88
+```
+
+The run will create 300 Million events; however, any event with latitude outside of the range -88 to 88 will be rejected.
+
+All files except possibly the last file will have 5 Million events.
 
 ## Converting To ASCII
 
