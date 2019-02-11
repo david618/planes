@@ -19,8 +19,11 @@
 package org.jennings.planes;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -82,13 +85,14 @@ public class Airports {
     public Airports(double lllon, double lllat, double urlon, double urlat, String ccs) {
 
         // Load Airports
-        FileReader fr;
-        BufferedReader br;
+        InputStreamReader isr = null;
+        BufferedReader br = null;
 
         try {
             // Load in Aiports; Assumes file is located in Project Root
-            fr = new FileReader("airports_countries.dat");
-            br = new BufferedReader(fr);
+            //fr = new FileReader("airports_countries.dat");
+            isr = new InputStreamReader(new FileInputStream("airports_countries.dat"), StandardCharsets.UTF_8); 
+            br = new BufferedReader(isr);
 
             airports = new ArrayList<>();
 
@@ -162,6 +166,17 @@ public class Airports {
 
         } catch (IOException | NumberFormatException e) {
             log.error("Ops!", e);
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException e) {
+                // ok to ignore.
+            }
+            try {
+                if (isr != null) isr.close();
+            } catch (IOException e) {
+                // ok to ignore
+            }
         }
 
     }

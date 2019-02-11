@@ -19,8 +19,10 @@
 package org.jennings.planes;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -71,7 +73,7 @@ public class CreatePlaneEventsFiles {
             Random rnd = new Random();
             int i = 0;
             while (i < numPlanes) {
-                int rndoffset = Math.abs(rnd.nextInt());
+                int rndoffset = rnd.nextInt(Integer.MAX_VALUE);
                 Plane t = new Plane(i, rts.get(i), rndoffset);
                 planes.add(t);
                 i++;
@@ -82,7 +84,7 @@ public class CreatePlaneEventsFiles {
 
             int fileNum = 0;
 
-            FileWriter fw = null;
+            OutputStreamWriter osw = null;
             BufferedWriter bw = null;
 
             // CurrentTime
@@ -135,7 +137,10 @@ public class CreatePlaneEventsFiles {
                             js.put("lon", df5.format(plane.gc.getLon()));
                             js.put("lat", df5.format(plane.gc.getLat()));
                             line = js.toString();
-
+                            break;
+                        default:
+                            System.out.println("Unsupported format");
+                            
                     }
                     
                     if (Math.abs(plane.gc.getLat()) > maxAbsLat) {
@@ -146,8 +151,8 @@ public class CreatePlaneEventsFiles {
                         // If no file is open open the next file 
                         if (bw == null) {
                             fileNum += 1;
-                            fw = new FileWriter(outputFolder + fs + prefix + String.format("%05d", fileNum));
-                            bw = new BufferedWriter(fw);
+                            osw = new OutputStreamWriter(new FileOutputStream(outputFolder + fs + prefix + String.format("%05d", fileNum)), StandardCharsets.UTF_8); 
+                            bw = new BufferedWriter(osw);
                         }
                         
                         numWritten += 1;
@@ -157,9 +162,9 @@ public class CreatePlaneEventsFiles {
                                                                                 
                     if (numWritten % samplesPerFile == 0) {
                         if (bw != null) bw.close();
-                        if (fw != null) fw.close();
+                        if (osw != null) osw.close();
                         bw = null;
-                        fw = null;
+                        osw = null;
                         
                     }                                        
                 }
@@ -175,7 +180,7 @@ public class CreatePlaneEventsFiles {
             }            
             
             try {
-                if (fw != null) fw.close();
+                if (osw != null) osw.close();
                 //System.out.println("fw closed");
             } catch (IOException e) {
                 // ok to ignore

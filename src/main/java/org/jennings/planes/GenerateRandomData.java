@@ -211,6 +211,8 @@ public class GenerateRandomData {
                 case 4:
                     word[j] = special[random.nextInt(numspe)];                    
                     break;
+                default:
+                    System.err.println("Invalid Type");
             }
             
         }
@@ -346,7 +348,7 @@ public class GenerateRandomData {
     public static void main(String args[]) {
         GenerateRandomData t = new GenerateRandomData();
         
-        Random rnd = new Random();
+        //Random rnd = new Random();
         
         Date dt = new Date();
         
