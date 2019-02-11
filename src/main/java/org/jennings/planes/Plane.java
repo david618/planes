@@ -18,7 +18,12 @@
  */
 package org.jennings.planes;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -307,6 +312,9 @@ public class Plane {
 
     public void createGeoJsonTest() {
 
+        
+        OutputStreamWriter osw =  null;
+        
         try {
 
             Routes routes = new Routes();
@@ -360,7 +368,7 @@ public class Plane {
                 }
             }
 
-            FileWriter fw = new FileWriter("temp.json");
+            osw = new OutputStreamWriter(new FileOutputStream("temp.json"), StandardCharsets.UTF_8); 
 
             JSONObject featureCollection = new JSONObject();
             featureCollection.put("type", "FeatureCollection");
@@ -368,18 +376,27 @@ public class Plane {
             featureCollection.put("features", results);
 
             //out.println(featureCollection);
-            featureCollection.write(fw);
+            featureCollection.write(osw);
 
-            fw.close();
-
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            if (osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    // ok to ignore
+                }
+            }
         }
 
     }
 
     private void test() {
 
+        OutputStreamWriter osw =  null;
+        
+        
         try {
 
             Routes routes = new Routes();
@@ -390,13 +407,13 @@ public class Plane {
 
             // Pick Route
             // Should turn routes class into an iterable class
-            Route rt = routes.get(4);
+            Route testrt;
 
             RouteBuilder rb = new RouteBuilder();
-            rt = rb.createRoute(86400);
+            testrt = rb.createRoute(86400);
 
             // Create Thing
-            Plane t = new Plane(1, rt, 0);
+            Plane t = new Plane(1, testrt, 0);
             long n = System.currentTimeMillis();
 
 //                    while (true) {
@@ -405,19 +422,28 @@ public class Plane {
 //                        System.out.println(t.secsToDep + " " + t.dist);
 //                        Thread.sleep(1000);
 //                    }
-            FileWriter fw = new FileWriter("temp.txt");
 
-            for (int i = 0; i <= rt.lastSec * 2; i = i + 60) {
+            osw = new OutputStreamWriter(new FileOutputStream("temp.json"), StandardCharsets.UTF_8); 
+
+
+            for (int i = 0; i <= testrt.lastSec * 2; i = i + 60) {
 
                 t.setPosition(n + i * 1000);
-                fw.write(t + "\n");
+                osw.write(t + "\n");
                 System.out.println(t.getPlaneJSON());
 
             }
-            fw.close();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    // ok to ignore
+                }
+            }            
         }
 
     }

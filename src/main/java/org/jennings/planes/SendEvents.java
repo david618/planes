@@ -19,8 +19,13 @@
 
 package org.jennings.planes;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -47,16 +52,16 @@ public class SendEvents {
     static long numEventsSent;
     static long numIterations;
 
-    final private int STDOUT = 0;
-    final private int TCP = 1;
-    final private int HTTP = 2;
+    static final private int STDOUT = 0;
+    static final private int TCP = 1;
+    static final private int HTTP = 2;
 
-    final private int TXT = 0;
-    final private int JSON = 1;
+    static final private int TXT = 0;
+    static final private int JSON = 1;
 
-    final private int DURATIONSSECS = 86400;
-    final private int HTTPBATCH = 1000;
-    final private int SHOWCNTEVERY = 1000;
+    static final private int DURATIONSSECS = 86400;
+    static final private int HTTPBATCH = 1000;
+    static final private int SHOWCNTEVERY = 1000;
 
     Timer timer;
     int output;
@@ -66,9 +71,9 @@ public class SendEvents {
 //    Routes rts;
     ArrayList<Plane> planes = new ArrayList<>();
 
-    private OutputStream os = null;
+    private OutputStreamWriter osw = null;
 
-    private final String USER_AGENT = "Mozilla/5.0";
+    //static private final String USER_AGENT = "Mozilla/5.0";
 
     private HttpClient httpClient;
     private HttpPost httpPost;
@@ -114,6 +119,8 @@ public class SendEvents {
                         js.put("lon", t.getGc().getLon());
                         js.put("lat", t.getGc().getLat());
                         line = js.toString();
+                    default:
+                        System.err.println("Unsupported Format");
 
                 }
 
@@ -124,8 +131,8 @@ public class SendEvents {
                     case TCP:
                         line += "\n";
                         try {
-                            os.write(line.getBytes());
-                            os.flush();
+                            osw.write(line);
+                            osw.flush();
                             if (numEventsSent % SHOWCNTEVERY == 0) {
                                 System.out.println("Total Events Sent: " + numEventsSent);
                             }
@@ -183,6 +190,7 @@ public class SendEvents {
             httpPost.setHeader("Content-type", "application/json");
 
             HttpResponse resp = httpClient.execute(httpPost);
+            resp.getStatusLine().getStatusCode();
 
         }
 
@@ -264,7 +272,10 @@ public class SendEvents {
                 port = Integer.parseInt(parts[1]);
 
                 Socket skt = new Socket(server, port);
-                this.os = skt.getOutputStream();
+                
+                osw = new OutputStreamWriter(skt.getOutputStream(), StandardCharsets.UTF_8);
+                
+                
             }
 
             parts = what.trim().split(":");
@@ -310,7 +321,7 @@ public class SendEvents {
             int i = 0;
             while (i < numThg) {
 
-                int rndoffset = Math.abs(rnd.nextInt());
+                int rndoffset = rnd.nextInt(Integer.MAX_VALUE);
 
                 Plane t = new Plane(i, rts.get(i), rndoffset);
                 planes.add(t);
@@ -324,7 +335,7 @@ public class SendEvents {
             timer = new Timer();
             timer.schedule(new CheckCount(), 0, rate * 1000);
 
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
 
         }

@@ -18,10 +18,14 @@
  */
 package org.jennings.planes;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Random;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  *
@@ -33,7 +37,7 @@ public class Planes {
     // Specify Routes 
     Routes routes = new Routes();
     //or specify a route file name
-    String routeFileName;
+    //String routeFileName;
 
     public Planes() {
     }
@@ -58,7 +62,7 @@ public class Planes {
         Random rnd = new Random();
         int i = 0;
         while (i < routes.rts.size()) {
-            int rndoffset = Math.abs(rnd.nextInt());
+            int rndoffset = rnd.nextInt(Integer.MAX_VALUE);
             Plane t = new Plane(i, this.routes.get(i), rndoffset);
             planes.add(t);
             i++;
@@ -72,6 +76,9 @@ public class Planes {
      * @param filename
      */
     public void save(String filename) {
+
+        OutputStreamWriter osw = null;
+
         try {
 
             JSONArray jsonPlanes = new JSONArray();
@@ -80,12 +87,21 @@ public class Planes {
                 jsonPlanes.put(plane.getJSON());
             }
 
-            FileWriter fw = new FileWriter(filename);
+            osw = new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8);
 
-            jsonPlanes.write(fw);
-            fw.close();
-        } catch (Exception e) {
-
+            jsonPlanes.write(osw);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        } catch (JSONException e) {
+            System.err.println(e.getMessage());
+        } finally {
+            if (osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    // ok to ignore
+                }
+            }
         }
 
     }
@@ -120,11 +136,10 @@ public class Planes {
         }
         System.out.println();
     }
-    
+
     public void getPlanesJSON() {
         getPlanesJSON(System.currentTimeMillis());
     }
-    
 
     public void getPlanesCSV(long timeMillis) {
 
@@ -138,7 +153,7 @@ public class Planes {
     public void getPlanesCSV() {
         getPlanesCSV(System.currentTimeMillis());
     }
-    
+
     public static void main(String args[]) {
 
         try {
@@ -150,16 +165,14 @@ public class Planes {
             routes.createRandomRoutes(10, 86400);
             Planes t = new Planes(routes);
 
-            
             //Planes t = new Planes("routes10000_2day.json");
             t.createPlanes();
             long st = System.currentTimeMillis();
             long ct = st;
-            while (ct < st + 1000*10) {
+            while (ct < st + 1000 * 10) {
                 t.getPlanesCSV();
                 ct += 1000;
             }
-            
 
             //t.save("planes.json");
         } catch (Exception e) {

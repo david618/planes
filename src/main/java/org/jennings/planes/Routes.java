@@ -18,8 +18,11 @@
  */
 package org.jennings.planes;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -68,6 +71,8 @@ public class Routes {
     }
 
     public void save(String filename) {
+        OutputStreamWriter osw = null;
+
         try {
 
             JSONArray jsonRts = new JSONArray();
@@ -76,14 +81,20 @@ public class Routes {
                 jsonRts.put(rt);
             }
 
-            FileWriter fw = new FileWriter(filename);
+            osw = new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8);
 
-            jsonRts.write(fw);
-            fw.close();
-        } catch (Exception e) {
+            jsonRts.write(osw);
+        } catch (FileNotFoundException | JSONException e) {
 
+        } finally {
+            if (osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    // ok to ignore
+                }
+            }
         }
-
     }
 
     public void load(String filename) {
@@ -110,21 +121,20 @@ public class Routes {
     }
 
     public void createRandomRoutes(int numRoutes, long durationSecs) {
-        try {
 
-            for (int i = 1; i <= numRoutes; i++) {
-                Route rt = rb.createRoute(durationSecs);
-                rt.setId(i);
-                rts.add(rt);
-            }
-
-            //System.out.println(jsonRts.toString(2));
-        } catch (Exception e) {
-
+        for (int i = 1; i <= numRoutes; i++) {
+            Route rt = rb.createRoute(durationSecs);
+            rt.setId(i);
+            rts.add(rt);
         }
+
+        //System.out.println(jsonRts.toString(2));
     }
 
     public void createRandomRouteFile(String filename, int numRoutes, long durationSecs) {
+
+        OutputStreamWriter osw = null;
+
         try {
 
             JSONArray jsonRts = new JSONArray();
@@ -136,14 +146,20 @@ public class Routes {
                 jsonRts.put(rt.getJSON());
             }
 
-            FileWriter fw = new FileWriter(filename);
+            osw = new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8);
 
-            jsonRts.write(fw);
+            jsonRts.write(osw);
 
-            fw.close();
             //System.out.println(jsonRts.toString(2));
-        } catch (Exception e) {
-
+        } catch (FileNotFoundException | JSONException  e) {
+        } finally {
+            if (osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    // ok to ignore
+                }
+            }
         }
     }
 
@@ -161,7 +177,6 @@ public class Routes {
         // t.load("routes10000_4day.json");
 
         int numArgs = args.length;
-        
 
         if (numArgs != 3 && numArgs != 4 && numArgs != 7) {
             System.err.println("Usage: Routes routeFilename numRoutes durationSeconds");
@@ -175,7 +190,7 @@ public class Routes {
             Integer durationSecs = Integer.parseInt(args[2]);
 
             Routes t = new Routes();
-            
+
             switch (numArgs) {
                 case 4:
                     String csvCountryCodes = args[3];
@@ -191,7 +206,7 @@ public class Routes {
                 default:
                     break;
             }
-            
+
             t.createRandomRouteFile(routeFilename, numRoutes, durationSecs);
 
         }

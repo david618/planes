@@ -108,13 +108,13 @@ public class Route {
         this.wpts = wpts;
         numWpts = wpts.size();
         lastSec = wpts.get(numWpts - 1).getEt();
-        int maxOffset = 0;
-        if (lastSec > Integer.MAX_VALUE) {
-            maxOffset = Integer.MAX_VALUE;
-        } else {
-            maxOffset = (int) lastSec;
-        }
-        Random rnd = new Random();
+//        int maxOffset = 0;
+//        if (lastSec > Integer.MAX_VALUE) {
+//            maxOffset = Integer.MAX_VALUE;
+//        } else {
+//            maxOffset = (int) lastSec;
+//        }
+//        Random rnd = new Random();
     }
 
     /** 

@@ -34,9 +34,9 @@ public class Plane2 {
     
     Waypoint wpt;  // Current Waypoint for plane; st is starttime as epoch and et is arrival time as epoch
     
-    GreatCircle gcir = new GreatCircle();
+    //GreatCircle gcir = new GreatCircle();
     
-    GeographicCoordinate gc; // Current position of plan
+    //GeographicCoordinate gc; // Current position of plan
     int id;
     double speed;
     double bearing;
