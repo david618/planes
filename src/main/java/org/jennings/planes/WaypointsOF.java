@@ -19,10 +19,14 @@
 package org.jennings.planes;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -38,11 +42,14 @@ public class WaypointsOF {
 
     public WaypointsOF() {
 
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+        
         try {
             Airports arpts = new Airports();
 
-            FileReader fr = new FileReader("routes.dat");
-            BufferedReader br = new BufferedReader(fr);
+            isr = new InputStreamReader(new FileInputStream("routes.dat"), StandardCharsets.UTF_8); 
+            br = new BufferedReader(isr);
 
             int i = 0;
             String line;
@@ -121,18 +128,31 @@ public class WaypointsOF {
 
             }
 
-            for (String name : waypoints.keySet()) {
+            //for (String name : waypoints.keySet()) {
+            for (Map.Entry entry : waypoints.entrySet()) {
+                String name = (String) entry.getKey();
                 System.out.println(name + " : " + waypoints.get(name).size());
             }
             System.out.println(waypoints.size());  // 3150 origins; each origin has 1 to 100's of destinations
 
         } catch (IOException e) {
 
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException e) {
+                // ok to ignore.
+            }
+            try {
+                if (isr != null) isr.close();
+            } catch (IOException e) {
+                // ok to ignore
+            }
         }
     }
 
     public static void main(String[] args) {
-        WaypointsOF t = new WaypointsOF();
+        //WaypointsOF t = new WaypointsOF();
     }
 
 }
