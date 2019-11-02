@@ -102,7 +102,7 @@ public class Airports {
                 ccsList = new ArrayList<>();
                 String ccsArray[] = ccs.split(",");
                 for (String cc : ccsArray) {
-                    ccsList.add(cc);
+                    ccsList.add(cc.toUpperCase());
                 }
             }
 
@@ -150,7 +150,7 @@ public class Airports {
 
                 if (ccs != null) {
                     // If name is not null match name (ignore any coordinate entries provided)
-                    if (ccsList.contains(cc)) {
+                    if (ccsList.contains(cc.toUpperCase())) {
                         airports.add(arpt);
                     }
                 } else if (dlon > lllon && dlon < urlon) {
@@ -208,9 +208,25 @@ public class Airports {
         return arpt;
     }
 
+    public void printCC() {
+        ArrayList<String> ccList = new ArrayList<>();
+        airports.forEach((arpt) -> {
+            String CC = arpt.getCc().toUpperCase() + " : " + arpt.getCountry();
+            if (!ccList.contains(CC)) {
+            	ccList.add(CC);
+            }
+        }); 
+        
+        ccList.sort(null);
+        ccList.forEach((CC) -> {
+        	System.out.println(CC);
+        });
+        
+    }
+    
     public void printAll() {
         airports.forEach((arpt) -> {
-            System.out.println(arpt.getName());
+            System.out.println(arpt.getName() + ":" + arpt.getCc());
         });
 
     }
