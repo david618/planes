@@ -127,15 +127,15 @@ public class CreatePlaneEventsFiles {
                             JSONObject js = new JSONObject();
                             js.put("id", plane.id);
                             js.put("ts", plane.timestamp);
-                            js.put("speed", df.format(plane.speed * 1000.0));
-                            js.put("dist", df.format(plane.dist));
-                            js.put("bearing", df.format(plane.bearing));
+                            js.put("speed", Double.parseDouble(df.format(plane.speed * 1000.0)));
+                            js.put("dist", Double.parseDouble(df.format(plane.dist)));
+                            js.put("bearing", Double.parseDouble(df.format(plane.bearing)));
                             js.put("rtid", plane.rt.id);
                             js.put("orig", plane.origin);
                             js.put("dest", plane.destination);
                             js.put("secsToDep", plane.secsToDep);
-                            js.put("lon", df5.format(plane.gc.getLon()));
-                            js.put("lat", df5.format(plane.gc.getLat()));
+                            js.put("lon", Double.parseDouble(df5.format(plane.gc.getLon())));
+                            js.put("lat", Double.parseDouble(df5.format(plane.gc.getLat())));
                             line = js.toString();
                             break;
                         default:
