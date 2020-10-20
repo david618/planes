@@ -154,20 +154,24 @@ public class CreatePlaneEventsFiles2 {
                     }
 
                     if (Math.abs(plane.gc.getLat()) > maxAbsLat) {
-                        // Skip lats over maxAbsLat 
-
-                    } else {
-                        // If no file is open open the next file 
-                        if (bw == null) {
-                            fileNum += 1;
-                            osw = new OutputStreamWriter(new FileOutputStream(outputFolder + fs + prefix + String.format("%05d", fileNum)), StandardCharsets.UTF_8); 
-                            bw = new BufferedWriter(osw);
+                        // Pin maxLat
+                        if (plane.gc.getLat() > 0) {
+                            plane.gc.setLat(maxAbsLat);
+                        } else {
+                            plane.gc.setLat(-1.0*maxAbsLat);
                         }
-
-                        numWritten += 1;
-                        bw.write(line);
-                        bw.newLine();
                     }
+                    
+                    // If no file is open open the next file 
+                    if (bw == null) {
+                        fileNum += 1;
+                        osw = new OutputStreamWriter(new FileOutputStream(outputFolder + fs + prefix + String.format("%05d", fileNum)), StandardCharsets.UTF_8); 
+                        bw = new BufferedWriter(osw);
+                    }
+
+                    numWritten += 1;
+                    bw.write(line);
+                    bw.newLine();
 
                     if (numWritten % samplesPerFile == 0) {
                         if (bw != null) {
